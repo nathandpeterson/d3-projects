@@ -1,5 +1,8 @@
 body {
-  background: lightgreen;
+  background: black;
+  color: white;
+  text-align: center;
+  font-family: Lucida, sans-serif;
 }
 
 svg {
