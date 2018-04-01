@@ -1,12 +1,7 @@
-/*
-*    main.js
-*    Mastering Data Visualization with D3.js
-*    Project 1 - Star Break Coffee
-*/
 
-const margin = {top: 10, right: 10, bottom: 100, left: 100}
-const width = 700 - margin.right - margin.left
-const height = 500 - margin.top - margin.bottom 
+const margin = {top: 10, right: 20, bottom: 30, left: 80}
+const width = 600 - margin.right - margin.left
+const height = 400 - margin.top - margin.bottom 
 
 const svg = d3.select('#chart-area').append('svg')
   .attr('width', width + margin.right + margin.left)
@@ -17,12 +12,17 @@ const g = svg.append('g')
 
 const data = d3.json('data/revenues.json', (err, data) => {
   if(err) console.log(err)
-  console.log('data',data)
+  const cleanData = data.map(el => {
+    el.revenue = parseInt(el.revenue, 10)
+    el.profit = parseInt(el.profit, 10)
+    return el
+  })
+  console.log('clean', cleanData)
 
-const highestRevenue = Math.max(...data.map(month => parseInt(month.revenue, 10)))
+const highestRevenue = Math.max(...cleanData.map(month => month.revenue))
 
 const x = d3.scaleBand()
-  .domain(data.map(month => month.month ))
+  .domain(cleanData.map(month => month.month ))
   .range([0, width])
   .paddingInner(0.3)
   .paddingOuter(0.3)
@@ -38,9 +38,7 @@ const xAxisCall = d3.axisBottom(x)
     .call(xAxisCall)
     .selectAll('text')
       .attr('y', '10')
-      .attr('x', '-5')
-      .attr('text-anchor', 'end')
-      .attr('transform', 'rotate(-40)')
+      .attr('text-anchor', 'middle')
 
 const yAxisCall = d3.axisLeft(y)
     .ticks(3)
@@ -48,5 +46,15 @@ const yAxisCall = d3.axisLeft(y)
   g.append('g')
     .attr('class', 'y-axis')
     .call(yAxisCall)
-
+    
+let bars = g.selectAll('rect')
+    .data(cleanData)
+  
+bars.enter()
+    .append('rect')
+    .attr('y', d => y(d.revenue))
+    .attr('x', d => x(d.month))
+    .attr('height', d => height - y(d.revenue))
+    .attr('width', 60)
+    .attr('fill', 'gray')
 })
