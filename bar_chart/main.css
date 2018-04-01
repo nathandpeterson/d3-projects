@@ -1,10 +1,18 @@
 body {
-  background: black;
   color: white;
   text-align: center;
   font-family: Lucida, sans-serif;
 }
 
+body {
+  background: url('http://res.cloudinary.com/ndpimg/image/upload/f_auto/v1522588496/anders-jilden-239-unsplash.jpg');
+  background-repeat: no-repeat;
+  content: '';
+  will-change: transform;
+}
+
 svg {
   background: white;
+  border-radius: 5px;
+  opacity: .95;
 }
