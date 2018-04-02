@@ -17,7 +17,6 @@ const data = d3.json('data/revenues.json', (err, data) => {
     el.profit = parseInt(el.profit, 10)
     return el
   })
-  console.log('clean', cleanData)
 
 const highestRevenue = Math.max(...cleanData.map(month => month.revenue))
 
@@ -56,5 +55,6 @@ bars.enter()
     .attr('x', d => x(d.month))
     .attr('height', d => height - y(d.revenue))
     .attr('width', 60)
-    .attr('fill', 'gray')
+    .attr('fill', 'seagreen')
+    .attr('class', 'chart-bar')
 })
