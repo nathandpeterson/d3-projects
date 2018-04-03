@@ -1,7 +1,7 @@
 
-const margin = {top: 10, right: 20, bottom: 30, left: 80}
+const margin = {top: 20, right: 20, bottom: 70, left: 100}
 const width = 600 - margin.right - margin.left
-const height = 400 - margin.top - margin.bottom 
+const height = 500 - margin.top - margin.bottom 
 
 const svg = d3.select('#chart-area').append('svg')
   .attr('width', width + margin.right + margin.left)
@@ -9,6 +9,23 @@ const svg = d3.select('#chart-area').append('svg')
 
 const g = svg.append('g')
   .attr('transform', `translate(${margin.left},${margin.top})`)
+
+g.append('text')
+  .attr('class', 'x axis-label')
+  .attr('x', width/2)
+  .attr('y', height+55)
+  .attr('font-size', '20px')
+  .attr('text-anchor', 'middle')
+  .text('Monthly Sales Figures')
+
+g.append('text')
+  .attr('class', 'y axis-label')
+  .attr('x', - (height/2))
+  .attr('y', -60)
+  .attr('font-size', '20px')
+  .attr('text-anchor', 'middle')
+  .attr('transform', 'rotate(-90)')
+  .text('Revenue')
 
 const data = d3.json('data/revenues.json', (err, data) => {
   if(err) console.log(err)
