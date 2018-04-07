@@ -3,22 +3,39 @@ const margin = {top: 20, right: 20, bottom: 70, left: 100}
 const width = 600 - margin.right - margin.left
 const height = 500 - margin.top - margin.bottom 
 
-const svg = d3.select('#chart-area').append('svg')
-  .attr('width', width + margin.right + margin.left)
-  .attr('height', height + margin.top + margin.bottom)
+let displayProfit = true
 
-const g = svg.append('g')
-  .attr('transform', `translate(${margin.left},${margin.top})`)
+const transition = d3.transition().duration(750)
 
+const g = d3.select('#chart-area')
+  .append('svg')
+    .attr('width', width + margin.right + margin.left)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`)
+
+let xAxisGroup = g.append('g')
+  .attr('class', 'x axis')
+  .attr('transform', `translate(0,${height})`)
+  
+let yAxisGroup = g.append('g')
+  .attr('class', 'y-axis')
+
+const x = d3.scaleBand()
+  .range([0, width])
+  .padding(0.2)
+
+const y = d3.scaleLinear()
+  .range([height,0])
+  
 g.append('text')
-  .attr('class', 'x axis-label')
   .attr('x', width/2)
   .attr('y', height+55)
   .attr('font-size', '20px')
   .attr('text-anchor', 'middle')
   .text('Monthly Sales Figures')
 
-g.append('text')
+const yLabel = g.append('text')
   .attr('class', 'y axis-label')
   .attr('x', - (height/2))
   .attr('y', -60)
@@ -27,7 +44,7 @@ g.append('text')
   .attr('transform', 'rotate(-90)')
   .text('Revenue')
 
-const data = d3.json('data/revenues.json', (err, data) => {
+d3.json('data/revenues.json', (err, data) => {
   if(err) console.log(err)
   const cleanData = data.map(el => {
     el.revenue = parseInt(el.revenue, 10)
@@ -35,43 +52,66 @@ const data = d3.json('data/revenues.json', (err, data) => {
     return el
   })
 
-const highestRevenue = Math.max(...cleanData.map(month => month.revenue))
-
-const x = d3.scaleBand()
-  .domain(cleanData.map(month => month.month ))
-  .range([0, width])
-  .paddingInner(0.3)
-  .paddingOuter(0.3)
-
-const y = d3.scaleLinear()
-  .domain([0, highestRevenue])
-  .range([height,0])
-
-const xAxisCall = d3.axisBottom(x)
-  g.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', `translate(0,${height})`)
-    .call(xAxisCall)
-    .selectAll('text')
-      .attr('y', '10')
-      .attr('text-anchor', 'middle')
-
-const yAxisCall = d3.axisLeft(y)
-    .ticks(3)
-    .tickFormat(d => '$' + d)
-  g.append('g')
-    .attr('class', 'y-axis')
-    .call(yAxisCall)
-    
-let bars = g.selectAll('rect')
-    .data(cleanData)
-  
-bars.enter()
-    .append('rect')
-    .attr('y', d => y(d.revenue))
-    .attr('x', d => x(d.month))
-    .attr('height', d => height - y(d.revenue))
-    .attr('width', 60)
-    .attr('fill', 'seagreen')
-    .attr('class', 'chart-bar')
+  d3.interval(() => {
+   update(cleanData)
+   displayProfit = !displayProfit
+  }, 1000)
+  update(cleanData)
 })
+
+function update(cleanData){
+    const value = displayProfit ? 'revenue' : 'profit'
+
+    const highestRevenue = Math.max(...cleanData.map(month => month[value]))
+
+    x.domain(cleanData.map(month => month.month ))
+    y.domain([0, highestRevenue])
+
+    let xAxisCall = d3.axisBottom(x)
+    xAxisGroup.transition(transition).call(xAxisCall)
+
+    const yAxisCall = d3.axisLeft(y)
+        .ticks(3)
+        .tickFormat(d => '$' + d)
+      yAxisGroup.call(yAxisCall)
+
+    let bars = g.selectAll('rect')
+        .data(cleanData)
+
+    // Update pattern has three parts: exit, update, and enter
+
+    // EXIT, has access to elements on the page but not in data
+
+    bars.exit()
+      .attr('fill', 'gray')
+      .transition(transition)
+      .attr('y', y(0))
+      .attr('height', 0)
+      .remove()
+
+    // UPDATE, has access to elements on page to be updated (?)
+    bars.transition(transition)
+      .attr('y', d => y(d[value]))
+      .attr('x', d => x(d.month))
+      .attr('height', d => height - y(d[value]))
+      .attr('width', 60)
+
+    // ENTER has elements that are in data array but not on page
+    
+    bars.enter()
+        .append('rect')
+          .attr('fill', 'seagreen')
+          .attr('y', y(0))
+          .attr('height', 0)
+          .attr('x', d => x(d.month))
+          .attr('width', 60)
+          .attr('y', d => y(d.revenue))
+          .attr('height', d => height - y(d[value]))
+          .attr('fill-opacity', 0)
+          .transition(transition)
+            .attr('y', d => y(d[value]))
+            .attr('fill-opacity', 1)
+
+    const label = displayProfit ? 'Revenue' : 'Profit'
+    yLabel.text(label)
+}
