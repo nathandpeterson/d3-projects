@@ -63,4 +63,16 @@ g.append('text')
 First, the group element is selected by using the css transform property to add margins, which provide the necessary spacing for our labels. The transform:translate(x,y) selector shifts the chart away from the margins. Second, a text svg is appended to the x-label. We are setting css attributes with d3 .attr methods, but the label could also be assigned a class associated with the desired styles.
 
 
+* Update pattern
+
+The update pattern can be used to make a visualization more dynamic by cycling data in and out of the visualization over time. There are three stages of the update pattern.
+* EXIT has access to elements on the page but not in data
+Exit is usually used to clear visualizations from the screen.
+* UPDATE: for each datapoint, create or update an element
+* ENTER : has access to elements that are in data array but not on page
+
+Here, the update pattern is used to change the area of each datapoint on the scatterplot.
+
+
+[![scatterplot visualization showing relationship between gdp and life expectancy](https://youtu.be/umCaRHEGyro)](https://youtu.be/umCaRHEGyro)
 
