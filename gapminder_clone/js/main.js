@@ -63,14 +63,48 @@ g.append('g')
 	.call(yAxisCall)
 
 d3.json("data/data.json", function(data){
-	console.log(data);
+
 	// Clean data
 	const cleanData = data.map(year => {
-		let data = (country.income && country.life_exp)
-		return data
-	}).map(country => {
-		country.income = +country.income
-		country.life_exp = +country.life_exp
-		return country
+		return year['countries'].filter(country => {
+			let data = (country.income && country.life_exp)
+			return data
+		}).map(country => {
+				country.income = +country.income
+				country.life_exp = +country.life_exp
+				return country
 	})
 })
+console.log(cleanData)
+	d3.interval(() => {
+		// Restart the visualization after data runs out
+		time = (time < 214) ? time + 1 : 0
+		update(cleanData[time])
+	}, 200)
+	update(cleanData[0])
+})
+
+
+
+function update(data){
+	// Transition constant
+	const TRANSITION = d3.transition().duration(200)
+
+	let circles = g.selectAll('circle').data(data, d => d.country)
+	// EXIT clear old elements from the DOM
+	circles.exit()
+		.attr('class', 'exit')
+		.remove()
+	// ENTER new elements present in new data
+	circles.enter()
+		.append('circle')
+		.attr('class', 'enter')
+		.attr('fill', d => continentColor(d.continent))
+		.merge(circles)
+		.transition(TRANSITION)
+			.attr('cy', d => y(d.life_exp))
+			.attr('cx', d => x(d.income))
+			.attr('r', d => Math.sqrt(area(parseInt(d.population) / Math.PI)))
+
+	timeLabel.text(+(time + 1800))
+}
