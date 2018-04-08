@@ -81,6 +81,7 @@ function update(cleanData){
     // Update pattern has three parts: exit, update, and enter
 
     // EXIT, has access to elements on the page but not in data
+    // EXIT is usually used to clear elements from the screen.
 
     bars.exit()
       .attr('fill', 'gray')
@@ -89,7 +90,7 @@ function update(cleanData){
       .attr('height', 0)
       .remove()
 
-    // UPDATE, has access to elements on page to be updated (?)
+    // UPDATE: for each datapoint, create or update an element
     bars.transition(transition)
       .attr('y', d => y(d[value]))
       .attr('x', d => x(d.month))
@@ -104,12 +105,14 @@ function update(cleanData){
           .attr('y', y(0))
           .attr('height', 0)
           .attr('x', d => x(d.month))
-          .attr('width', 60)
-          .attr('y', d => y(d.revenue))
-          .attr('height', d => height - y(d[value]))
           .attr('fill-opacity', 0)
+  // Merge -- attributes before merge will just apply to ENTER
+          .merge(bars)
+  // Merge -- attributes after merge will apply to BOTH ENTER and UPDATE
           .transition(transition)
+            .attr('x', d => x(d.month))
             .attr('y', d => y(d[value]))
+            .attr('height', d => height - y(d[value]))
             .attr('fill-opacity', 1)
 
     const label = displayProfit ? 'Revenue' : 'Profit'
