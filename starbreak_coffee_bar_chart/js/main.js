@@ -108,7 +108,7 @@ function update(cleanData){
           .attr('fill-opacity', 0)
   // Merge -- attributes before merge will just apply to ENTER
           .merge(bars)
-  // Merge -- attributes after merge will apply to BOTH ENTER and UPDATE
+  // Merge -- attributes after merge will apply to BOTH ENTER and
           .transition(transition)
             .attr('x', d => x(d.month))
             .attr('y', d => y(d[value]))
