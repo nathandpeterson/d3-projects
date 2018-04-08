@@ -11,8 +11,8 @@ const height = 500 - margin.top - margin.bottom
 const g = d3.select('#chart-area')
   .append('svg')
     .attr('width', width + margin.right + margin.left)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
+		.attr('height', height + margin.top + margin.bottom)
+		.append('g')
 			.attr('transform', `translate(${margin.left},${margin.top})`)
 			
 let time = 0
@@ -25,7 +25,8 @@ let y = d3.scaleLinear()
 	.range([height, 0])
 	.domain([0, 90])
 let area = d3.scaleLinear()
-	.range([25*Math.PI, 1500*Math.pi])
+	.range([25*Math.PI, 1500*Math.PI])
+	.domain([2000, 1400000000])
 let continentColor = d3.scaleOrdinal(d3.schemeCategory20)
 
 let xLabel = g.append('text')
@@ -75,12 +76,11 @@ d3.json("data/data.json", function(data){
 				return country
 	})
 })
-console.log(cleanData)
 	d3.interval(() => {
 		// Restart the visualization after data runs out
 		time = (time < 214) ? time + 1 : 0
 		update(cleanData[time])
-	}, 200)
+	}, 100)
 	update(cleanData[0])
 })
 
@@ -88,7 +88,7 @@ console.log(cleanData)
 
 function update(data){
 	// Transition constant
-	const TRANSITION = d3.transition().duration(200)
+	const TRANSITION = d3.transition().duration(100)
 
 	let circles = g.selectAll('circle').data(data, d => d.country)
 	// EXIT clear old elements from the DOM
