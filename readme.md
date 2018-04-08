@@ -74,6 +74,5 @@ Exit is usually used to clear visualizations from the screen.
 Here, the update pattern is used to change the area of each datapoint on the scatterplot.
 
 
-[![scatterplot visualization showing relationship between gdp and life expectancy](https://img.youtube.com/vi/umCaRHEGyro/0.jpg)]
-(http://www.youtube.com/watch?v=umCaRHEGyro)
+[![scatterplot visualization showing relationship between gdp and life expectancy](https://img.youtube.com/vi/umCaRHEGyro/0.jpg)](http://www.youtube.com/watch?v=umCaRHEGyro)
 
