@@ -37,8 +37,8 @@ let xLabel = g.append('text')
 	.text('GDP per capita ($)')
 let yLabel = g.append('text')
 	.attr('transform', 'rotate(-90)')
-	.attr('x', -170)
 	.attr('y', -40)
+	.attr('x', -170)
 	.attr('font-size', '20px')
 	.attr('text-anchor', 'middle')
 	.attr('Life Expectancy in Years')
@@ -54,14 +54,36 @@ let xAxisCall = d3.axisBottom(x)
 	.tickValues([400, 4000, 40000])
 	.tickFormat(d3.format('$'))
 g.append('g')
-	.attr('class', 'x axis')
+	.attr('class', 'x-axis')
 	.attr('transform', `translate(0, ${height})`)
 	.call(xAxisCall)
 
 let yAxisCall = d3.axisLeft(y)
+	.tickFormat(function(d){return +d})
 g.append('g')
-	.attr('class', 'y axis')
+	.attr('class', 'y-axis')
 	.call(yAxisCall)
+
+const continents = ['europe', 'asia', 'americas', 'africa']
+
+let legend = g.append('g')
+	.attr('transform', `translate(${width-10},${height-123})`)
+
+continents.forEach((continent, i) => {
+	let legendRow = legend.append('g')
+		.attr('transform', `translate(0, ${i*20})`)
+
+		legendRow.append('rect')
+			.attr('width', 10)
+			.attr('height', 10)
+			.attr('fill', continentColor(continent))
+		legendRow.append('text')
+			.attr('x', -10)
+			.attr('y', 10)
+			.attr('text-anchor', 'end')
+			.style('text-transform', 'capitalize')
+			.text(continent)
+})
 
 d3.json("data/data.json", function(data){
 
@@ -83,8 +105,6 @@ d3.json("data/data.json", function(data){
 	}, 100)
 	update(cleanData[0])
 })
-
-
 
 function update(data){
 	// Transition constant
